@@ -1,18 +1,3 @@
-# -------------------------------------------------------------------------------------------------
-#  Copyright (C) 2015-2025 Nautech Systems Pty Ltd. All rights reserved.
-#  https://nautechsystems.io
-#
-#  Licensed under the GNU Lesser General Public License Version 3.0 (the "License");
-#  You may not use this file except in compliance with the License.
-#  You may obtain a copy of the License at https://www.gnu.org/licenses/lgpl-3.0.en.html
-#
-#  Unless required by applicable law or agreed to in writing, software
-#  distributed under the License is distributed on an "AS IS" BASIS,
-#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-#  See the License for the specific language governing permissions and
-#  limitations under the License.
-# -------------------------------------------------------------------------------------------------
-
 import asyncio
 import itertools
 import os
@@ -26,14 +11,16 @@ from nautilus_trader.core.nautilus_pyo3 import SocketClient
 from nautilus_trader.core.nautilus_pyo3 import SocketConfig
 
 
-HOST = "stream-api.betfair.com"
-PORT = 443
+HOST = "127.0.0.1"
+REST_PORT = 15556
+STREAM_PORT = 15557
 CRLF = b"\r\n"
 ENCODING = "utf-8"
 UNIQUE_ID = itertools.count()
 
+# TODO: Use EAClient instead of BetfairHttpClient
 
-class BetfairStreamClient:
+class MetaTrader5StreamClient:
     """
     Provides a streaming client for Betfair.
     """
@@ -50,7 +37,7 @@ class BetfairStreamClient:
     ) -> None:
         self.handler = message_handler
         self.host = host or HOST
-        self.port = port or PORT
+        self.port = port or STREAM_PORT
         self.crlf = crlf or CRLF
         self.encoding = encoding or ENCODING
         self.use_ssl = True
@@ -211,7 +198,7 @@ class BetfairStreamClient:
         }
 
 
-class BetfairOrderStreamClient(BetfairStreamClient):
+class BetfairOrderStreamClient(MetaTrader5StreamClient):
     """
     Provides an order stream client for Betfair.
     """
@@ -263,7 +250,7 @@ class BetfairOrderStreamClient(BetfairStreamClient):
                 await asyncio.sleep(1.0)
 
 
-class BetfairMarketStreamClient(BetfairStreamClient):
+class BetfairMarketStreamClient(MetaTrader5StreamClient):
     """
     Provides a Betfair market stream client.
     """
